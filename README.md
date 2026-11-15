@@ -1,11 +1,8 @@
-# reezwan-portfolio
+# reezwan95.github.io
 
-Static site: plain HTML, CSS and JavaScript. No build step.
-Deploy by uploading this folder to any static host (GitHub Pages, Netlify, Cloudflare Pages, Vercel).
+Portfolio of Reezwan-Us Sami: Industrial Engineering (AI & Applied ML), University of Toronto.
+Static site with plain HTML, CSS and JavaScript, and no build step.
 
-- index.html: the page
-- assets/style.css, assets/main.js: styling and interactivity
-- assets/data.js: TTC case-study numbers (from the ttc-subway-delay-analysis repo)
-- assets/Reezwan-Us_Sami_Resume.pdf: public résumé (no phone number)
-
-For a custom domain on GitHub Pages, add a file named CNAME containing just your domain, e.g. reezwansami.com.
+- `assets/triage.js`: the exported incident-triage model behind the in-page demo ([source](https://github.com/Reezwan95/subway-incident-triage))
+- `assets/main.js`: interactions (hero animation, triage demo, fit check)
+- `assets/Reezwan-Us_Sami_Resume.pdf`: public résumé (no phone number)
