@@ -156,7 +156,7 @@
     ['Process improvement', /process improvement|continuous improvement|\blean\b|efficien/, 'Reporting redesign at MHI RJ; operating processes at Hybernate'],
     ['Root-cause analysis', /root cause|root-cause/, 'CRJ service-centre performance analysis'],
     ['Project management / Agile', /project manag|agile|scrum/, 'Agile coordination at the U of T Robotics Association'],
-    ['Supply chain and operations', /supply chain|logistics|operations/, 'Operations Director at Hybernate; MHI RJ supply-chain KPIs'],
+    ['Supply chain and operations', /supply chain|logistics|operations/, 'Operations Lead at Hybernate; MHI RJ supply-chain KPIs'],
     ['Financial and pricing analysis', /financ|pricing|budget|cost analysis/, 'Pricing and expense analysis (+10% profitability); budgeting dashboards'],
     ['Communication', /communicat|presentation|storytelling/, 'Reports and recommendations for executives; memos on GitHub'],
     ['Aviation / aerospace', /aviation|aerospace|aircraft|airline/, '16 months at MHI RJ Aviation Group (CRJ Series)'],
