@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Bowling with Bob the Builder</title>
+<style>
+  :root{
+    --accent:#4f46e5;
+    --accent-soft:#eef2ff;
+    --ink:#1a1a1a;
+    --muted:#6b7280;
+    --line:#e5e7eb;
+    --bg:#f1f2f6;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  body{
+    margin:0;padding:20px 14px 48px;
+    background:var(--bg);color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    line-height:1.5;
+  }
+  .wrap{max-width:900px;margin:0 auto}
+  header{text-align:center;margin:8px 0 22px}
+  h1{font-size:1.6rem;margin:0 0 8px;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin:0 auto;max-width:34em;font-size:.97rem}
+  .fine{color:#9ca3af;font-size:.72rem;margin-top:10px;letter-spacing:.02em}
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:14px;
+    box-shadow:0 1px 3px rgba(16,24,40,.06);overflow:hidden;
+  }
+  .grid{display:flex;flex-direction:column}
+  .host{padding:24px;border-bottom:1px solid var(--line)}
+  .avatar{
+    width:56px;height:56px;border-radius:50%;background:var(--accent-soft);
+    display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:14px;
+  }
+  .hostname{color:var(--muted);font-size:.9rem;margin:0}
+  .event{font-size:1.3rem;font-weight:650;margin:2px 0 16px;letter-spacing:-.01em}
+  .meta{list-style:none;padding:0;margin:0;display:grid;gap:11px}
+  .meta li{display:flex;gap:10px;font-size:.92rem;color:#374151;align-items:flex-start}
+  .meta span.ico{flex:0 0 1.2em}
+  .picker{padding:24px}
+  .label{font-weight:650;font-size:1.02rem;margin:0 0 14px}
+  .dates{display:grid;grid-template-columns:repeat(auto-fit,minmax(88px,1fr));gap:10px}
+  .date{
+    min-height:62px;border:1px solid var(--line);background:#fff;border-radius:10px;
+    cursor:pointer;font:inherit;color:var(--ink);padding:8px 4px;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+    transition:border-color .15s,background .15s;
+  }
+  .date .dow{font-size:.72rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+  .date .num{font-size:1.15rem;font-weight:650}
+  .date:hover{border-color:var(--accent);background:var(--accent-soft)}
+  .date.open{border-color:var(--accent);background:var(--accent);color:#fff}
+  .date.open .dow{color:rgba(255,255,255,.8)}
+  .date.has{border-color:var(--accent)}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--accent);margin-top:1px}
+  .date.open .dot{background:#fff}
+  .slots{margin-top:18px;display:none}
+  .slots.show{display:block}
+  .slots h3{font-size:.86rem;font-weight:650;color:var(--muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em}
+  .slotgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .slot{
+    min-height:46px;border:1px solid var(--accent);background:#fff;color:var(--accent);
+    border-radius:10px;font:inherit;font-weight:600;cursor:pointer;
+    transition:background .15s,color .15s;
+  }
+  .slot:hover{background:var(--accent-soft)}
+  .slot.sel{background:var(--accent);color:#fff}
+  .footer{padding:20px 24px 24px;border-top:1px solid var(--line);background:#fcfcfd}
+  .count{font-size:.88rem;color:var(--muted);margin:0 0 12px;min-height:1.3em}
+  .btn{
+    width:100%;min-height:50px;border:0;border-radius:10px;background:var(--accent);color:#fff;
+    font:inherit;font-weight:650;font-size:1rem;cursor:pointer;transition:opacity .15s;
+  }
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.ghost{background:#fff;color:var(--accent);border:1px solid var(--accent);margin-top:12px}
+  .done{padding:40px 24px;text-align:center;display:none}
+  .done.show{display:block}
+  .check{
+    width:62px;height:62px;border-radius:50%;background:#ecfdf5;color:#059669;
+    display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;
+  }
+  .done h2{margin:0 0 8px;font-size:1.3rem;letter-spacing:-.01em}
+  .done .list{
+    list-style:none;padding:16px;margin:20px auto;max-width:360px;text-align:left;
+    background:var(--accent-soft);border-radius:10px;display:grid;gap:8px;font-size:.93rem;
+  }
+  .done .note{color:var(--muted);font-size:.93rem;margin:0}
+  .toast{
+    position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+    background:#111827;color:#fff;padding:10px 18px;border-radius:999px;font-size:.88rem;
+    opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0)}
+  @media(min-width:760px){
+    body{padding-top:40px}
+    h1{font-size:2rem}
+    .grid{flex-direction:row}
+    .host{flex:0 0 300px;border-bottom:0;border-right:1px solid var(--line)}
+    .picker{flex:1}
+    .footer{padding:20px 24px 24px}
+    .btn{width:auto;min-width:220px;padding:0 28px}
+    .btn.ghost{margin-top:0;margin-left:12px}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Welcome, Shahrin!</h1>
+    <p class="sub">Please select your availability below for an unforgettable night with Bob the Builder (the GOAT).</p>
+    <p class="fine">Powered by Calendly&trade; (not really)</p>
+  </header>
+
+  <div class="card">
+    <div id="booking">
+      <div class="grid">
+        <div class="host">
+          <div class="avatar">&#128119;</div>
+          <p class="hostname">Bob the Builder</p>
+          <p class="event">Bowling</p>
+          <ul class="meta">
+            <li><span class="ico">&#128205;</span><span>Playtime Bowling, North York</span></li>
+            <li><span class="ico">&#127865;</span><span>First round of shots: covered by attendee</span></li>
+          </ul>
+        </div>
+
+        <div class="picker">
+          <p class="label">Select a day</p>
+          <div class="dates" id="dates"></div>
+          <div class="slots" id="slots">
+            <h3 id="slotsHead">Times</h3>
+            <div class="slotgrid" id="slotgrid"></div>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        <p class="count" id="count">No times selected yet.</p>
+        <button class="btn" id="confirm" disabled>Confirm availability</button>
+      </div>
+    </div>
+
+    <div class="done" id="done">
+      <div class="check">&#10003;</div>
+      <h2>Booking request received.</h2>
+      <ul class="list" id="picks"></ul>
+      <p class="note">Bob has been notified. He is already practicing.</p>
+      <button class="btn ghost" id="copy" style="max-width:260px;margin:20px auto 0;display:block">Copy my picks</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast">copied!</div>
+
+<script>
+const ENDPOINT = 'PASTE_APPS_SCRIPT_URL_HERE';
+
+const DAYS = [
+  {dow:'Tue', num:1, label:'Tue Dec 1'},
+  {dow:'Wed', num:2, label:'Wed Dec 2'},
+  {dow:'Thu', num:3, label:'Thu Dec 3'},
+  {dow:'Fri', num:4, label:'Fri Dec 4'},
+  {dow:'Sat', num:5, label:'Sat Dec 5'},
+  {dow:'Sun', num:6, label:'Sun Dec 6'},
+  {dow:'Mon', num:7, label:'Mon Dec 7'}
+];
+const TIMES = ['6:00 PM','7:00 PM','8:00 PM','9:00 PM'];
+
+const picked = {};
+DAYS.forEach(function(d){ picked[d.label] = []; });
+let openDay = null;
+
+const datesEl = document.getElementById('dates');
+const slotsEl = document.getElementById('slots');
+const slotgridEl = document.getElementById('slotgrid');
+const slotsHead = document.getElementById('slotsHead');
+const countEl = document.getElementById('count');
+const confirmBtn = document.getElementById('confirm');
+
+DAYS.forEach(function(d){
+  const b = document.createElement('button');
+  b.className = 'date';
+  b.dataset.label = d.label;
+  b.innerHTML = '<span class="dow">' + d.dow + '</span><span class="num">' + d.num + '</span>';
+  const dot = document.createElement('span');
+  dot.className = 'dot';
+  dot.style.visibility = 'hidden';
+  b.appendChild(dot);
+  b.addEventListener('click', function(){ openDayView(d.label); });
+  datesEl.appendChild(b);
+});
+
+function openDayView(label){
+  openDay = label;
+  Array.prototype.forEach.call(datesEl.children, function(el){
+    el.classList.toggle('open', el.dataset.label === label);
+  });
+  slotsHead.textContent = label.replace('Dec', 'December') + ' — pick any that work';
+  slotgridEl.innerHTML = '';
+  TIMES.forEach(function(t){
+    const s = document.createElement('button');
+    s.className = 'slot' + (picked[label].indexOf(t) > -1 ? ' sel' : '');
+    s.textContent = t;
+    s.addEventListener('click', function(){
+      const i = picked[label].indexOf(t);
+      if (i > -1) { picked[label].splice(i, 1); s.classList.remove('sel'); }
+      else { picked[label].push(t); s.classList.add('sel'); }
+      refresh();
+    });
+    slotgridEl.appendChild(s);
+  });
+  slotsEl.classList.add('show');
+  refresh();
+}
+
+function selection(){
+  const out = [];
+  DAYS.forEach(function(d){
+    TIMES.forEach(function(t){
+      if (picked[d.label].indexOf(t) > -1) out.push(d.label + ' — ' + t);
+    });
+  });
+  return out;
+}
+
+function refresh(){
+  Array.prototype.forEach.call(datesEl.children, function(el){
+    const has = picked[el.dataset.label].length > 0;
+    el.classList.toggle('has', has && !el.classList.contains('open'));
+    el.querySelector('.dot').style.visibility = has ? 'visible' : 'hidden';
+  });
+  const n = selection().length;
+  countEl.textContent = n === 0
+    ? 'No times selected yet.'
+    : n + (n === 1 ? ' time selected.' : ' times selected.');
+  confirmBtn.disabled = n === 0;
+}
+
+function asText(){
+  return 'Shahrin’s availability for bowling:\n' + selection().map(function(s){ return '• ' + s; }).join('\n');
+}
+
+confirmBtn.addEventListener('click', function(){
+  const slots = selection();
+  if (!slots.length) return;
+
+  try {
+    fetch(ENDPOINT, {
+      method: 'POST',
+      mode: 'no-cors',
+      body: JSON.stringify({ name: 'Shahrin', slots: slots })
+    });
+  } catch (err) { /* opaque by design; confirmation shows regardless */ }
+
+  const list = document.getElementById('picks');
+  list.innerHTML = '';
+  slots.forEach(function(s){
+    const li = document.createElement('li');
+    li.textContent = s;
+    list.appendChild(li);
+  });
+
+  document.getElementById('booking').style.display = 'none';
+  document.getElementById('done').classList.add('show');
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+
+document.getElementById('copy').addEventListener('click', function(){
+  const text = asText();
+  const toast = document.getElementById('toast');
+  function show(){
+    toast.classList.add('show');
+    setTimeout(function(){ toast.classList.remove('show'); }, 1600);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(show, fallback);
+  } else { fallback(); }
+  function fallback(){
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    ta.style.position = 'fixed';
+    ta.style.opacity = '0';
+    document.body.appendChild(ta);
+    ta.select();
+    try { document.execCommand('copy'); } catch (e) {}
+    document.body.removeChild(ta);
+    show();
+  }
+});
+
+refresh();
+</script>
+</body>
+</html>
