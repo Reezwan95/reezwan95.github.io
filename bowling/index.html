@@ -6,12 +6,12 @@
 <title>Bowling with Bob the Builder</title>
 <style>
   :root{
-    --accent:#4f46e5;
-    --accent-soft:#eef2ff;
+    --accent:#1d4ed8;
+    --accent-soft:#eaf1fd;
     --ink:#1a1a1a;
     --muted:#6b7280;
-    --line:#e5e7eb;
-    --bg:#f1f2f6;
+    --line:#dde5f0;
+    --bg:#f4f8ff;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   body{
@@ -27,7 +27,7 @@
   .fine{color:#9ca3af;font-size:.72rem;margin-top:10px;letter-spacing:.02em}
   .card{
     background:#fff;border:1px solid var(--line);border-radius:14px;
-    box-shadow:0 1px 3px rgba(16,24,40,.06);overflow:hidden;
+    box-shadow:0 1px 3px rgba(29,78,216,.08);overflow:hidden;
   }
   .grid{display:flex;flex-direction:column}
   .host{padding:24px;border-bottom:1px solid var(--line)}
@@ -60,7 +60,7 @@
   .slots{margin-top:18px;display:none}
   .slots.show{display:block}
   .slots h3{font-size:.86rem;font-weight:650;color:var(--muted);margin:0 0 10px;text-transform:uppercase;letter-spacing:.05em}
-  .slotgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(110px,1fr));gap:10px}
+  .slotgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(104px,1fr));gap:10px}
   .slot{
     min-height:46px;border:1px solid var(--accent);background:#fff;color:var(--accent);
     border-radius:10px;font:inherit;font-weight:600;cursor:pointer;
@@ -79,7 +79,7 @@
   .done{padding:40px 24px;text-align:center;display:none}
   .done.show{display:block}
   .check{
-    width:62px;height:62px;border-radius:50%;background:#ecfdf5;color:#059669;
+    width:62px;height:62px;border-radius:50%;background:var(--accent-soft);color:var(--accent);
     display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;
   }
   .done h2{margin:0 0 8px;font-size:1.3rem;letter-spacing:-.01em}
@@ -158,15 +158,28 @@
 const ENDPOINT = 'PASTE_APPS_SCRIPT_URL_HERE';
 
 const DAYS = [
-  {dow:'Tue', num:1, label:'Tue Dec 1'},
-  {dow:'Wed', num:2, label:'Wed Dec 2'},
-  {dow:'Thu', num:3, label:'Thu Dec 3'},
-  {dow:'Fri', num:4, label:'Fri Dec 4'},
-  {dow:'Sat', num:5, label:'Sat Dec 5'},
-  {dow:'Sun', num:6, label:'Sun Dec 6'},
-  {dow:'Mon', num:7, label:'Mon Dec 7'}
+  {dow:'Tue', num:1, label:'Tue Dec 1', from:18*60, to:21*60+30},
+  {dow:'Wed', num:2, label:'Wed Dec 2', from:19*60+30, to:21*60+30},
+  {dow:'Thu', num:3, label:'Thu Dec 3', from:20*60+30, to:21*60+30},
+  {dow:'Fri', num:4, label:'Fri Dec 4', from:19*60+30, to:21*60+30},
+  {dow:'Sat', num:5, label:'Sat Dec 5', from:16*60, to:21*60+30},
+  {dow:'Sun', num:6, label:'Sun Dec 6', from:12*60, to:21*60+30},
+  {dow:'Mon', num:7, label:'Mon Dec 7', from:18*60, to:21*60+30}
 ];
-const TIMES = ['6:00 PM','7:00 PM','8:00 PM','9:00 PM'];
+
+function fmt(mins){
+  let h = Math.floor(mins / 60), m = mins % 60;
+  const ap = h >= 12 ? 'PM' : 'AM';
+  h = h % 12; if (h === 0) h = 12;
+  return h + ':' + (m < 10 ? '0' + m : m) + ' ' + ap;
+}
+
+const TIMES_BY_DAY = {};
+DAYS.forEach(function(d){
+  const out = [];
+  for (let t = d.from; t <= d.to; t += 30) out.push(fmt(t));
+  TIMES_BY_DAY[d.label] = out;
+});
 
 const picked = {};
 DAYS.forEach(function(d){ picked[d.label] = []; });
@@ -199,7 +212,7 @@ function openDayView(label){
   });
   slotsHead.textContent = label.replace('Dec', 'December') + ' — pick any that work';
   slotgridEl.innerHTML = '';
-  TIMES.forEach(function(t){
+  TIMES_BY_DAY[label].forEach(function(t){
     const s = document.createElement('button');
     s.className = 'slot' + (picked[label].indexOf(t) > -1 ? ' sel' : '');
     s.textContent = t;
@@ -218,7 +231,7 @@ function openDayView(label){
 function selection(){
   const out = [];
   DAYS.forEach(function(d){
-    TIMES.forEach(function(t){
+    TIMES_BY_DAY[d.label].forEach(function(t){
       if (picked[d.label].indexOf(t) > -1) out.push(d.label + ' — ' + t);
     });
   });
